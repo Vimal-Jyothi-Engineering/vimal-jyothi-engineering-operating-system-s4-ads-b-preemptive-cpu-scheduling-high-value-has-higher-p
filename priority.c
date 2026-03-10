@@ -1,74 +1,83 @@
 #include <stdio.h>
 #include <string.h>
 
-struct process{
+struct process
+{
     char pid[10];
     int at, bt, pr;
     int rt;
     int ct, wt, tat;
 };
 
-int main(){
+int main()
+{
     int n;
-    scanf("%d",&n);
+    scanf("%d", &n);
 
     struct process p[20];
-    int i;
 
-    for(i=0;i<n;i++){
-        scanf("%s %d %d %d",p[i].pid,&p[i].at,&p[i].bt,&p[i].pr);
-        p[i].rt=p[i].bt;
+    for(int i = 0; i < n; i++)
+    {
+        scanf("%s %d %d %d", p[i].pid, &p[i].at, &p[i].bt, &p[i].pr);
+        p[i].rt = p[i].bt;
     }
 
-    int completed=0,time=0,idx;
-    int max_pr;
+    int completed = 0;
+    int time = 0;
 
-    while(completed<n){
-        idx=-1;
-        max_pr=-1;
+    while(completed < n)
+    {
+        int idx = -1;
+        int max_pr = -1;
 
-        for(i=0;i<n;i++){
-            if(p[i].at<=time && p[i].rt>0){
-                if(p[i].pr>max_pr){
-                    max_pr=p[i].pr;
-                    idx=i;
+        for(int i = 0; i < n; i++)
+        {
+            if(p[i].at <= time && p[i].rt > 0)
+            {
+                if(p[i].pr > max_pr)
+                {
+                    max_pr = p[i].pr;
+                    idx = i;
                 }
             }
         }
 
-        if(idx!=-1){
-            p[idx].rt--;
+        if(idx == -1)
+        {
             time++;
-
-            if(p[idx].rt==0){
-                p[idx].ct=time;
-                completed++;
-            }
+            continue;
         }
-        else{
-            time++;
+
+        p[idx].rt--;
+        time++;
+
+        if(p[idx].rt == 0)
+        {
+            completed++;
+            p[idx].ct = time;
+            p[idx].tat = p[idx].ct - p[idx].at;
+            p[idx].wt = p[idx].tat - p[idx].bt;
         }
     }
 
-    float avg_wt=0,avg_tat=0;
-
-    for(i=0;i<n;i++){
-        p[i].tat=p[i].ct-p[i].at;
-        p[i].wt=p[i].tat-p[i].bt;
-        avg_wt+=p[i].wt;
-        avg_tat+=p[i].tat;
-    }
+    float total_wt = 0, total_tat = 0;
 
     printf("Waiting Time:\n");
-    for(i=0;i<n;i++)
-        printf("%s %d\n",p[i].pid,p[i].wt);
+    for(int i = 0; i < n; i++)
+    {
+        printf("%s %d\n", p[i].pid, p[i].wt);
+        total_wt += p[i].wt;
+    }
 
-    printf("Turnaround Time:\n");
-    for(i=0;i<n;i++)
-        printf("%s %d\n",p[i].pid,p[i].tat);
+    printf("\nTurnaround Time:\n");
+    for(int i = 0; i < n; i++)
+    {
+        printf("%s %d\n", p[i].pid, p[i].tat);
+        total_tat += p[i].tat;
+    }
 
-    printf("Average Waiting Time: %.2f\n",avg_wt/n);
-    printf("Average Turnaround Time: %.2f\n",avg_tat/n);
+    printf("\nAverage Waiting Time: %.2f\n", total_wt/n);
+    printf("Average Turnaround Time: %.2f\n", total_tat/n);
 
     return 0;
 }
